@@ -4,6 +4,20 @@ import "./Ownable.sol";
 import "./SafeMath.sol";
 
 
+interface ERC20Interface {
+    function totalSupply() external constant returns (uint);
+    function balanceOf(address tokenOwner) external constant returns (uint balance);
+    function allowance(address tokenOwner, address spender) external constant returns (uint remaining);
+    function transfer(address to, uint tokens) external returns (bool success);
+    function approve(address spender, uint tokens) external returns (bool success);
+    function transferFrom(address from, address to, uint tokens) external returns (bool success);
+
+    event Transfer(address indexed from, address indexed to, uint tokens);
+    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+}
+
+
+
 // ----------------------------------------------------------------------------
 // Contract function to receive approval and execute function in one call
 //
@@ -18,7 +32,7 @@ contract ApproveAndCallFallBack {
 // ERC20 Token, with the addition of symbol, name and decimals and an
 // initial fixed supply
 // ----------------------------------------------------------------------------
-contract ERC20Token is Ownable {
+contract ERC20Token is Ownable, ERC20Interface {
     using SafeMath for uint;
 
     string public symbol;
@@ -28,9 +42,6 @@ contract ERC20Token is Ownable {
 
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
-
-    event Transfer(address indexed from, address indexed to, uint tokens);
-    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
 
     // ------------------------------------------------------------------------
@@ -49,7 +60,7 @@ contract ERC20Token is Ownable {
     // ------------------------------------------------------------------------
     // Total supply
     // ------------------------------------------------------------------------
-    function totalSupply() public constant returns (uint) {
+    function totalSupply() external constant returns (uint) {
         return _totalSupply  - balances[address(0)];
     }
 
@@ -57,7 +68,7 @@ contract ERC20Token is Ownable {
     // ------------------------------------------------------------------------
     // Get the token balance for account `tokenOwner`
     // ------------------------------------------------------------------------
-    function balanceOf(address tokenOwner) public constant returns (uint balance) {
+    function balanceOf(address tokenOwner) external constant returns (uint balance) {
         return balances[tokenOwner];
     }
 
@@ -67,7 +78,7 @@ contract ERC20Token is Ownable {
     // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
-    function transfer(address to, uint tokens) public returns (bool success) {
+    function transfer(address to, uint tokens) external returns (bool success) {
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         Transfer(msg.sender, to, tokens);
@@ -83,7 +94,7 @@ contract ERC20Token is Ownable {
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces
     // ------------------------------------------------------------------------
-    function approve(address spender, uint tokens) public returns (bool success) {
+    function approve(address spender, uint tokens) external returns (bool success) {
         allowed[msg.sender][spender] = tokens;
         Approval(msg.sender, spender, tokens);
         return true;
@@ -99,7 +110,7 @@ contract ERC20Token is Ownable {
     // - Spender must have sufficient allowance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
-    function transferFrom(address from, address to, uint tokens) public returns (bool success) {
+    function transferFrom(address from, address to, uint tokens) external returns (bool success) {
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -112,7 +123,7 @@ contract ERC20Token is Ownable {
     // Returns the amount of tokens approved by the owner that can be
     // transferred to the spender's account
     // ------------------------------------------------------------------------
-    function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
+    function allowance(address tokenOwner, address spender) external constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
 
