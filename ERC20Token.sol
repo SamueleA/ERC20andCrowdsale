@@ -36,10 +36,10 @@ contract ERC20Token is Ownable, ERC20Interface {
     // Constructor
     // ------------------------------------------------------------------------
     function ERC20Token() public {
-        symbol = "DEN";
-        name = "Denarii";
+        symbol = "CITY";
+        name = "CITYFORUM";
         decimals = 18;
-        _totalSupply = 1000000 * 10**uint(decimals);
+        _totalSupply = 111000000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
         Transfer(address(0), owner, _totalSupply);
     }
