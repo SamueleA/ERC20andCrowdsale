@@ -1,7 +1,8 @@
 pragma solidity ^0.4.20;
 
-import "./ERC20Interface.sol";
 import "./SafeMath.sol";
+import "./Ownable.sol";
+
 
 /**
 * @title Crowdsale
@@ -16,8 +17,21 @@ import "./SafeMath.sol";
 * behavior.
 */
 
+interface ERC20Interface {
+    function totalSupply() public constant returns (uint);
+    function balanceOf(address tokenOwner) public constant returns (uint balance);
+    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
+    function transfer(address to, uint tokens) public returns (bool success);
+    function approve(address spender, uint tokens) public returns (bool success);
+    function transferFrom(address from, address to, uint tokens) public returns (bool success);
+
+    //we also need to get the owner
+    function owner() public returns(address _owner);
+}
+
 contract Crowdsale {
     using SafeMath for uint256;
+
 
     // The token being sold
     ERC20Interface public token;
@@ -45,7 +59,7 @@ contract Crowdsale {
     * @param _wallet Address where collected funds will be forwarded to
     * @param _token Address of the token being sold
     */
-    function Crowdsale(uint256 _rate, address _wallet, ERC20Interface _token) public {
+    function Crowdsale(uint256 _rate, address _wallet, ERC20Interface _token) public payable {
         require(_rate > 0);
         require(_wallet != address(0));
         require(_token != address(0));
@@ -119,7 +133,7 @@ contract Crowdsale {
     * @param _tokenAmount Number of tokens to be emitted
     */
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-        token.transfer(_beneficiary, _tokenAmount);
+        token.transferFrom(token.owner(), _beneficiary, _tokenAmount);
     }
 
     /**
