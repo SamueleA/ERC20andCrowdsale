@@ -2,7 +2,7 @@ pragma solidity ^0.4.20;
 
 import "./SafeMath.sol";
 import "./Ownable.sol";
-
+import "./ERC20Interface.sol";
 
 /**
 * @title Crowdsale
@@ -16,18 +16,6 @@ import "./Ownable.sol";
 * the methods to add functionality. Consider using 'super' where appropiate to concatenate
 * behavior.
 */
-
-interface ERC20Interface {
-    function totalSupply() public constant returns (uint);
-    function balanceOf(address tokenOwner) public constant returns (uint balance);
-    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
-    function transfer(address to, uint tokens) public returns (bool success);
-    function approve(address spender, uint tokens) public returns (bool success);
-    function transferFrom(address from, address to, uint tokens) public returns (bool success);
-
-    //we also need to get the owner
-    function owner() public returns(address _owner);
-}
 
 contract Crowdsale {
     using SafeMath for uint256;
@@ -133,7 +121,7 @@ contract Crowdsale {
     * @param _tokenAmount Number of tokens to be emitted
     */
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-        token.transferFrom(token.owner(), _beneficiary, _tokenAmount);
+        token.transfer(_beneficiary, _tokenAmount);
     }
 
     /**
