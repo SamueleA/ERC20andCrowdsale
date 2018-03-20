@@ -27,11 +27,30 @@ contract Crowdsale {
     // Address where funds are collected
     address public wallet;
 
-    // How many token units a buyer gets per wei
-    uint256 public rate;
+    // How many token units a buyer gets per wei at each stage of the crowdsale
+    uint public rate;
+    uint256 public rate1;
+    uint256 public rate2;
+    uint256 public rate3;
+    uint256 public rate4;
+    uint256 public rate5;
+
+    //amount of tokens in each stage
+    uint256 public stage1 = 1000000 * 10 ** 18;
+    uint256 public stage2 = 2000000 * 10 ** 18;
+    uint256 public stage3 = 3000000 * 10 ** 18;
+    uint256 public stage4 = 2000000 * 10 ** 18;
+    uint256 public stage5 = 1000000 * 10 ** 18;
 
     // Amount of wei raised
     uint256 public weiRaised;
+
+    //amount of tokens sold
+    uint256 public tokenSold = 0;
+
+    //current stage of crowdsale
+    enum StageLevel {ONE, TWO, THREE, FOUR, FIVE}
+    StageLevel public stageLevel;
 
     /**
     * Event for token purchase logging
@@ -52,7 +71,15 @@ contract Crowdsale {
         require(_wallet != address(0));
         require(_token != address(0));
 
-        rate = _rate;
+        rate1 = _rate;
+        rate2 = _rate.div(10);
+        rate3 = _rate.div(100);
+        rate4 = _rate.div(200);
+        rate5 = _rate.div(300);
+
+        stageLevel = StageLevel.ONE;
+        rate = rate1;
+
         wallet = _wallet;
         token = _token;
     }
