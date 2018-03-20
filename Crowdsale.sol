@@ -27,8 +27,12 @@ contract Crowdsale {
     // Address where funds are collected
     address public wallet;
 
+    //maximum and minimum investment limit per individual
+    uint256 public minAmount = 0.2 ether;
+    uint256 public maxAmount = 20 ether;
+
     // How many token units a buyer gets per wei at each stage of the crowdsale
-    uint public rate;
+    uint256 public rate;
     uint256 public rate1;
     uint256 public rate2;
     uint256 public rate3;
