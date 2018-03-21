@@ -116,6 +116,8 @@ contract Crowdsale is Ownable {
 
         _processPurchase(_beneficiary, tokens);
         TokenPurchase(msg.sender, _beneficiary, weiAmount, tokens);
+        //updates the amount of sold tokens
+        tokensSold += tokens;
 
         _updatePurchasingState(_beneficiary, weiAmount);
 
