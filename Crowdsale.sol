@@ -17,7 +17,7 @@ import "./ERC20Interface.sol";
 * behavior.
 */
 
-contract Crowdsale {
+contract Crowdsale is Ownable {
     using SafeMath for uint256;
 
 
@@ -27,9 +27,9 @@ contract Crowdsale {
     // Address where funds are collected
     address public wallet;
 
-    //maximum and minimum investment limit per individual
-    uint256 public minAmount = 0.2 ether;
-    uint256 public maxAmount = 20 ether;
+    //maximum and minimum investment limit per individual value in wei
+    uint256 public minAmount = 200000000000000000;//0.2 ether
+    uint256 public maxAmount = 20000000000000000000;//20 ether
 
     // How many token units a buyer gets per wei at each stage of the crowdsale
     uint256 public rate;
@@ -40,20 +40,20 @@ contract Crowdsale {
     uint256 public rate5;
 
     //amount of tokens in each stage
-    uint256 public stage1 = 1000000 * 10 ** 18;
-    uint256 public stage2 = 2000000 * 10 ** 18;
-    uint256 public stage3 = 3000000 * 10 ** 18;
-    uint256 public stage4 = 2000000 * 10 ** 18;
-    uint256 public stage5 = 1000000 * 10 ** 18;
+    //tokens distribution
+    uint256 public stage2Threshold = 1000000 * 10 ** 18;
+    uint256 public stage3Threshold = 3000000 * 10 ** 18;
+    uint256 public stage4Threshold = 6000000 * 10 ** 18;
+    uint256 public stage5Threshold = 8000000 * 10 ** 18;
 
     // Amount of wei raised
     uint256 public weiRaised;
 
     //amount of tokens sold
-    uint256 public tokenSold = 0;
+    uint256 public tokensSold = 0;
 
     //current stage of crowdsale
-    enum StageLevel {ONE, TWO, THREE, FOUR, FIVE}
+    enum StageLevel {ONE, TWO, THREE, FOUR, FIVE, END}
     StageLevel public stageLevel;
 
     /**
@@ -121,6 +121,14 @@ contract Crowdsale {
 
         _forwardFunds();
         _postValidatePurchase(_beneficiary, weiAmount);
+
+        _updateCrowdsaleStage();
+    }
+
+    //owner can end crowdsale and send remaining tokens to whomever he wants
+    function endCrowdsale( address _returnAddress, uint256 _tokenAmount) public onlyOwner {
+        stageLevel = StageLevel.END;
+        _deliverTokens(_returnAddress, _tokenAmount);
     }
 
     // -----------------------------------------
@@ -134,7 +142,8 @@ contract Crowdsale {
     */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         require(_beneficiary != address(0));
-        require(_weiAmount != 0);
+        require(_weiAmount >= minAmount);
+        require(_weiAmount <= maxAmount);
     }
 
     /**
@@ -173,6 +182,22 @@ contract Crowdsale {
         // optional override
     }
 
+    function _updateCrowdsaleStage() internal {
+        if (tokensSold > stage5Threshold) {
+            stageLevel = StageLevel.FIVE;
+            rate = rate5;
+        } else if (tokensSold > stage4Threshold) {
+            stageLevel = StageLevel.FOUR;
+            rate = rate4;
+        } else if (tokensSold > stage3Threshold) {
+            stageLevel = StageLevel.THREE;
+            rate = rate3;
+        } else if (tokensSold > stage2Threshold) {
+            stageLevel = StageLevel.TWO;
+            rate = rate2;
+        }
+    }
+
     /**
     * @dev Override to extend the way in which ether is converted to tokens.
     * @param _weiAmount Value in wei to be converted into tokens
@@ -188,4 +213,5 @@ contract Crowdsale {
     function _forwardFunds() internal {
         wallet.transfer(msg.value);
     }
+
 }
