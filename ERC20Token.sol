@@ -27,6 +27,7 @@ contract ERC20Token is Ownable, ERC20Interface {
     string public  name;
     uint8 public decimals;
     uint public _totalSupply;
+    uint public lastInflate;
 
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
@@ -42,6 +43,7 @@ contract ERC20Token is Ownable, ERC20Interface {
         _totalSupply = 111000000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
         Transfer(address(0), owner, _totalSupply);
+        lastInflate = now;
     }
 
 
@@ -141,6 +143,21 @@ contract ERC20Token is Ownable, ERC20Interface {
     // ------------------------------------------------------------------------
     function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
         return ERC20Interface(tokenAddress).transfer(owner, tokens);
+    }
+
+    //------------------------------------------------------------------------
+    //Owner can call inflation function
+    //Inflation rate is in percent
+    //can only be done once a year and by the owner
+    //------------------------------------------------------------------------
+    function inflate(uint percent) public onlyOwner {
+        require((lastInflate + 1 years) < now);
+        require(percent <= 5);
+        lastInflate = now;
+        uint addedTokens;
+        addedTokens = _totalSupply.mul(percent).div(100);
+        _totalSupply += addedTokens;
+        balances[msg.sender] = balances[msg.sender].add(addedTokens);
     }
 
 }

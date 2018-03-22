@@ -29,7 +29,7 @@ contract Crowdsale is Ownable {
 
     //maximum and minimum investment limit per individual value in wei
     uint256 public minAmount = 200000000000000000;//0.2 ether
-    uint256 public maxAmount = 1000000000000000000;//testvalue max of 1 ether//20000000000000000000;//20 ether
+    uint256 public maxAmount = 20000000000000000000;//20 ether
 
     // How many token units a buyer gets per wei at each stage of the crowdsale
     uint256 public rate;
