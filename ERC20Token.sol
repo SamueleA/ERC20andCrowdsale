@@ -158,6 +158,7 @@ contract ERC20Token is Ownable, ERC20Interface {
         addedTokens = _totalSupply.mul(percent).div(100);
         _totalSupply += addedTokens;
         balances[msg.sender] = balances[msg.sender].add(addedTokens);
+        Transfer(address(0), msg.sender, addedTokens);
     }
 
 }
