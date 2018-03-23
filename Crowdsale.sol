@@ -41,10 +41,10 @@ contract Crowdsale is Ownable {
 
     //amount of tokens in each stage
     //tokens distribution
-    uint256 public stage2Threshold = 1000000 * 10 ** 18;
-    uint256 public stage3Threshold = 3000000 * 10 ** 18;
-    uint256 public stage4Threshold = 6000000 * 10 ** 18;
-    uint256 public stage5Threshold = 8000000 * 10 ** 18;
+    uint256 public stage2Threshold = 13000000000 * 10 ** 18;
+    uint256 public stage3Threshold = 20000000000 * 10 ** 18;
+    uint256 public stage4Threshold = 23000000000 * 10 ** 18;
+    uint256 public stage5Threshold = 25000000000 * 10 ** 18;
 
     // Amount of wei raised
     uint256 public weiRaised;
